@@ -1,0 +1,115 @@
+/*
+   --- Build Plan Template: GASD Project ---
+   Standard template for GASD project life-cycle.
+   Phases cover Design, Validation, Testing, Implementation, Quality, and Packaging.
+*/
+
+NAMESPACE: "PROJECT-Template"
+
+CONTEXT: "Build Plan Template: GASD Project"
+TARGET: "any"
+TRACE: "EPIC-PROJECT-001"
+
+CONSTRAINT: "Only execute one phase and pause by default, unless explicitly instructed by a human."
+
+// ===================================================================
+
+// PHASE 1 — Design (Output: Design/ folder)
+// Generate design-level GASD specifications for each component.
+// ===================================================================
+
+FLOW phase1_generate_design():
+    1. ACHIEVE "Read Requirements/Ver-1.0/User_story.md"
+    2. ENSURE "All #US, #AC, #AT, #RT IDs are extracted"
+        OTHERWISE THROW "Requirements Traceability Failed"
+    3. ACHIEVE "Generate Design/component_design.gasd" @trace #US-001
+    4. ENSURE "All AC IDs are traced in design files"
+        OTHERWISE THROW "Design Traceability Failed"
+
+// ===================================================================
+// PHASE 2 — Validation of Design (Output: Design/Validation/ folder)
+// Generate explicit, comprehensive GASD test cases strictly based on the Design/ folder.
+// ===================================================================
+
+FLOW phase2_generate_validation_of_design():
+    1. ACHIEVE "Generate Design/Validation/component_validation_test.gasd from Design/component_design.gasd"
+    2. ENSURE "Validation specs cover all constraints and type definitions present in the Design folder"
+        OTHERWISE THROW "Validation Specification Gap Detected"
+
+// ===================================================================
+// PHASE 3 — Testing (Output: Impl/tests/ folder)
+// Generate all acceptance and regression tests, then run to pass.
+// ===================================================================
+
+FLOW phase3_generate_tests():
+    /// Requirement: Consult ONLY Requirements/ and Design/ folders.
+    /// Do NOT use Impl/ (implementation) as a reference during test generation.
+    1. ACHIEVE "Review Requirements/, Design/Validation/ and Design/ for testing scope"
+    2. ENSURE "No Impl/ (implementation) code is used as reference"
+        OTHERWISE THROW "Design Violation: Implementation Leakage"
+
+    // --- Backward Compatibility Gate (MUST run first) ---
+    3. ENSURE "All existing tests pass unmodified before any new test generation"
+        OTHERWISE THROW "Regression Detected: Existing Tests Failed"
+
+    // --- Acceptance Tests ---
+    4. ACHIEVE "Generate most comprehensive Impl/tests/acceptance/test_component.py including all scenarios and cases" @trace #AT-001-01
+    5. ENSURE "All AC and AT are covered by acceptance tests"
+        OTHERWISE THROW "Testing Coverage Gap Detected: Acceptance"
+
+    // --- Regression Tests ---
+    6. ACHIEVE "Generate most comprehensive Impl/tests/regression/test_component.py including all scenarios and cases" @trace #RT-001-01
+    7. ENSURE "All RT are covered by regression tests"
+        OTHERWISE THROW "Testing Coverage Gap Detected: Regression"
+
+    // --- Negative Tests ---
+    8. ACHIEVE "Add most comprehensive negative testing suite covering all spec constraints, scenarios, and cases"
+    9. ENSURE "Negative tests correctly trigger and validate expected failures"
+        OTHERWISE THROW "Negative Testing Failure"
+
+    // --- Design Validation Tests (from phase2_generate_validation_of_design) ---
+    10. ACHIEVE "Generate most comprehensive Impl/tests/design_validation/component_tests.py from Design/Validation/component_validation_test.gasd including all scenarios and cases"
+    11. ENSURE "Design validation tests match the validation specifications"
+        OTHERWISE THROW "Design Validation Mismatch"
+
+    12. ENSURE "100% Traceability and Coverage for all AC, AT, and RT"
+        OTHERWISE THROW "Testing Coverage Gap Detected"
+
+// ===================================================================
+// PHASE 4 — Implementation (Output: Impl/ folder)
+// Generate production code from Phase 1 designs.
+// ===================================================================
+
+FLOW phase4_generate_implementation():
+    /// Requirement: Consult ONLY the Design/ and Design/Validation/ folders.
+    /// Do NOT use the Requirements/ folder as a reference during implementation.
+    1. ACHIEVE "Implement Impl/component/ from Design/ and Design/Validation/" @trace #US-001
+    2. ENSURE "No information from the Requirements/ folder is used for implementation"
+        OTHERWISE THROW "Design Violation: Implementation Leakage"
+    3. ENSURE "Implementation compiles successfully"
+        OTHERWISE THROW "Build Failed: Compilation Error"
+
+// ===================================================================
+// PHASE 5 — Full Quality Gate
+// All tests must pass before delivery.
+// ===================================================================
+
+FLOW phase5_full_quality_gate():
+    1. ACHIEVE "Execute full test suite including acceptance, regression, negative, and design validation tests"
+    2. ACHIEVE "If any tests fail, iteratively fix the implementation based on Design/ and re-run all tests until 100% pass"
+    3. ENSURE "All categories of tests specified in Phase 3 pass with 100% success rate"
+        OTHERWISE THROW "Build Failure: Quality Gate Failed"
+
+// ===================================================================
+// PHASE 6 — Final Packaging (Output: Build/Installation/ folder)
+// Unified packaging of components into a standalone application.
+// ===================================================================
+
+FLOW phase6_final_packaging():
+    1. ACHIEVE "Create build configuration with project metadata"
+    2. ACHIEVE "Prepare Build/Installation/ directory for distribution"
+    3. ACHIEVE "Assemble production artifacts into installation directory"
+    4. ENSURE "Installation into clean environment succeeds"
+        OTHERWISE THROW "Packaging Failed: Installation Error"
+    5. ENSURE "Final distribution passes all basic functionality smoke tests"
+        OTHERWISE THROW "Packaging Failed: Functionality Sanity Error"
