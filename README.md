@@ -49,11 +49,6 @@ GASD is backed by a growing ecosystem of tools to ensure your specifications are
 - [**GASD-Parser-Validator**](https://github.com/General-Agentic-Software-Design/GASD-Parser-Validator): A powerful tool to validate that your GASD files are semantically and syntactically correct.
 - [**VS Code Extension**](https://github.com/General-Agentic-Software-Design/gasd-vscode-extension): Official VS Code support for GASD, featuring syntax highlighting for a better design experience.
 
-## 📂 Repository Structure
-
-- [**GASD/**](./GASD): Contains the official GASD 1.1 Specification and the self-defining metamodel.
-- [**Build/**](./Build): Contains robust templates for task lifecycles, including:
-    - `build_plan.gasd`: A comprehensive template covering Design, Validation, Testing, Execution, Quality, and Delivery.
 
 ## 🛠️ Key GASD Primitives
 

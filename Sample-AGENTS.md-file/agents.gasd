@@ -1,0 +1,59 @@
+/* 
+   GASD 1.1.0 — Agent Workflows and Instructions
+   ==============================================
+   Converted from: Sample AGENTS.md file/agents.md
+*/
+
+CONTEXT: "Agent workflows and instructions"
+TARGET: "AI Agent"
+NAMESPACE: "org.gasd.sample.agents"
+TRACE: "Sample AGENTS.md file/agents.md"
+
+// ===================================================================
+// GLOBAL CONSTRAINTS
+// ===================================================================
+
+CONSTRAINT: "Always run pnpm lint and pnpm test before committing."
+CONSTRAINT: "Add or update tests for the code you change, even if nobody asked."
+CONSTRAINT: "Check the name field inside each package's package.json to confirm the right name—skip the top-level one."
+
+// ===================================================================
+// FLOWS
+// ===================================================================
+
+/// Set up and navigate the development environment.
+FLOW dev_environment_setup(project_name: String):
+    1. ACHIEVE "Jump to package directory":
+        command: "pnpm dlx turbo run where " + project_name
+    2. ACHIEVE "Add package to workspace":
+        command: "pnpm install --filter " + project_name
+    3. ACHIEVE "Spin up new React + Vite package":
+        command: "pnpm create vite@latest " + project_name + " -- --template react-ts"
+    4. ENSURE "Vite, ESLint, and TypeScript can see the new package"
+       OTHERWISE THROW "Environment Integration Failed"
+
+/// Execute the testing suite and ensure quality.
+FLOW testing_workflow(project_name: String):
+    1. ACHIEVE "Identify CI plan":
+        location: ".github/workflows"
+    2. ACHIEVE "Run package checks":
+        command: "pnpm turbo run test --filter " + project_name
+    3. ACHIEVE "Run full suite from root":
+        command: "pnpm test"
+    4. ACHIEVE "Focus on specific test":
+        command: "pnpm vitest run -t <test_name>"
+    5. ACHIEVE "Fix all test or type errors":
+        objective: "Iterate until whole suite is green"
+    6. ACHIEVE "Verify lint and TS rules":
+        command: "pnpm lint --filter " + project_name
+    7. ACHIEVE "Update or add tests for changed code"
+
+/// Prepare a pull request according to standards.
+FLOW pull_request_preparation(project_name: String, title: String):
+    1. ACHIEVE "Format PR Title":
+        formatted_title: "[" + project_name + "] " + title
+    2. ACHIEVE "Pre-commit Validation":
+        lint_command: "pnpm lint"
+        test_command: "pnpm test"
+    3. ENSURE "All checks pass" 
+        OTHERWISE THROW "Pre-commit Validation Failed"
