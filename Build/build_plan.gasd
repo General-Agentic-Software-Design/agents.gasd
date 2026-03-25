@@ -10,7 +10,8 @@ CONTEXT: "Build Plan Template: GASD Project"
 TARGET: "any"
 TRACE: "EPIC-PROJECT-001"
 
-CONSTRAINT: "Only execute one phase and pause by default, unless explicitly instructed by a human."
+CONSTRAINT: "GASD agent MUST only execute one phase and pause by default, unless explicitly instructed by a human."
+CONSTRAINT: "GASD agent MUST read and master 'GASD/GASD-1.1_Specification.md' to become an expert before generating any GASD files."
 
 // ===================================================================
 
@@ -25,16 +26,28 @@ FLOW phase1_generate_design():
     3. ACHIEVE "Generate Design/component_design.gasd" @trace #US-001
     4. ENSURE "All AC IDs are traced in design files"
         OTHERWISE THROW "Design Traceability Failed"
+    5. ENSURE "All generated design gasd pass 'gasd-parser --ast-sem' with no errors"
+        OTHERWISE THROW "Design Syntax or Semantic Error Detected"
+    6. ENSURE "All steps 1-5 are completed correctly, faithfully, and thoroughly"
+        OTHERWISE THROW "Design Quality Gate Failed: Incomplete or Unfaithful Execution"
 
 // ===================================================================
-// PHASE 2 — Validation of Design (Output: Design/Validation/ folder)
-// Generate explicit, comprehensive GASD test cases strictly based on the Design/ folder.
+// PHASE 2 — Generate Validations (Output: Validation/ folder)
+// Generate explicit, comprehensive GASD validations for Design, Acceptance, Regression, and Negative cases.
 // ===================================================================
 
-FLOW phase2_generate_validation_of_design():
-    1. ACHIEVE "Generate Design/Validation/component_validation_test.gasd from Design/component_design.gasd"
-    2. ENSURE "Validation specs cover all constraints and type definitions present in the Design folder"
-        OTHERWISE THROW "Validation Specification Gap Detected"
+FLOW phase2_generate_validations():
+    1. ACHIEVE "Read and master Requirements/ and Design/ folders to ensure expertise before generation"
+    2. ENSURE "All validation gasd are generated ONLY from Requirements/ and Design/"
+        OTHERWISE THROW "Validation Source Violation: Implementation Leakage"
+    3. ACHIEVE "Exhaustive validation of Design of all cases based on Design gasd; output to Validation/Design/"
+    4. ACHIEVE "Exhaustive validation of Acceptance Tests of all cases; output to Validation/Acceptance/"
+    5. ACHIEVE "Validation of Regression Tests of all cases; output to Validation/Regression/"
+    6. ACHIEVE "Exhaustive validation of Negative Tests of all cases; output to Validation/Negative/"
+    7. ENSURE "Each folder (Validation/Design, Validation/Acceptance, Validation/Regression, Validation/Negative) passes 'gasd-parser --ast-sem' with no errors"
+        OTHERWISE THROW "Validation Syntax or Semantic Error Detected"
+    8. ENSURE "All steps 1-7 are completed correctly, faithfully, and thoroughly"
+        OTHERWISE THROW "Validation Quality Gate Failed: Incomplete or Unfaithful Execution"
 
 // ===================================================================
 // PHASE 3 — Testing (Output: Impl/tests/ folder)
@@ -44,7 +57,7 @@ FLOW phase2_generate_validation_of_design():
 FLOW phase3_generate_tests():
     /// Requirement: Consult ONLY Requirements/ and Design/ folders.
     /// Do NOT use Impl/ (implementation) as a reference during test generation.
-    1. ACHIEVE "Review Requirements/, Design/Validation/ and Design/ for testing scope"
+    1. ACHIEVE "Review Requirements/, Validation/ and Design/ for testing scope"
     2. ENSURE "No Impl/ (implementation) code is used as reference"
         OTHERWISE THROW "Design Violation: Implementation Leakage"
 
@@ -53,27 +66,29 @@ FLOW phase3_generate_tests():
         OTHERWISE THROW "Regression Detected: Existing Tests Failed"
 
     // --- Acceptance Tests ---
-    4. ACHIEVE "Generate most comprehensive Impl/tests/acceptance/test_component.py including all scenarios and cases" @trace #AT-001-01
-    5. ENSURE "All AC and AT are covered by acceptance tests"
+    4. ACHIEVE "Generate most comprehensive Impl/tests/acceptance/test_component.py from Validation/Acceptance/ including all scenarios and cases" @trace #AT-001-01
+    5. ENSURE "All AC and AT from Validation/Acceptance/ are covered by acceptance tests"
         OTHERWISE THROW "Testing Coverage Gap Detected: Acceptance"
 
     // --- Regression Tests ---
-    6. ACHIEVE "Generate most comprehensive Impl/tests/regression/test_component.py including all scenarios and cases" @trace #RT-001-01
-    7. ENSURE "All RT are covered by regression tests"
+    6. ACHIEVE "Generate most comprehensive Impl/tests/regression/test_component.py from Validation/Regression/ including all scenarios and cases" @trace #RT-001-01
+    7. ENSURE "All RT from Validation/Regression/ are covered by regression tests"
         OTHERWISE THROW "Testing Coverage Gap Detected: Regression"
 
     // --- Negative Tests ---
-    8. ACHIEVE "Add most comprehensive negative testing suite covering all spec constraints, scenarios, and cases"
-    9. ENSURE "Negative tests correctly trigger and validate expected failures"
+    8. ACHIEVE "Add most comprehensive negative testing suite from Validation/Negative/ covering all spec constraints, scenarios, and cases"
+    9. ENSURE "Negative tests from Validation/Negative/ correctly trigger and validate expected failures"
         OTHERWISE THROW "Negative Testing Failure"
 
-    // --- Design Validation Tests (from phase2_generate_validation_of_design) ---
-    10. ACHIEVE "Generate most comprehensive Impl/tests/design_validation/component_tests.py from Design/Validation/component_validation_test.gasd including all scenarios and cases"
-    11. ENSURE "Design validation tests match the validation specifications"
+    // --- Design Validation Tests (from phase2_generate_validations) ---
+    10. ACHIEVE "Generate most comprehensive Impl/tests/design_validation/component_tests.py from Validation/Design/ including all scenarios and cases"
+    11. ENSURE "Design validation tests match the specifications in Validation/Design/"
         OTHERWISE THROW "Design Validation Mismatch"
 
     12. ENSURE "100% Traceability and Coverage for all AC, AT, and RT"
         OTHERWISE THROW "Testing Coverage Gap Detected"
+    13. ENSURE "All steps 1-12 are completed correctly, faithfully, and thoroughly"
+        OTHERWISE THROW "Testing Quality Gate Failed: Incomplete or Unfaithful Execution"
 
 // ===================================================================
 // PHASE 4 — Implementation (Output: Impl/ folder)
@@ -81,13 +96,15 @@ FLOW phase3_generate_tests():
 // ===================================================================
 
 FLOW phase4_generate_implementation():
-    /// Requirement: Consult ONLY the Design/ and Design/Validation/ folders.
+    /// Requirement: Consult ONLY the Design/ and Validation/ folders.
     /// Do NOT use the Requirements/ folder as a reference during implementation.
-    1. ACHIEVE "Implement Impl/component/ from Design/ and Design/Validation/" @trace #US-001
+    1. ACHIEVE "Implement Impl/component/ from Design/ and Validation/" @trace #US-001
     2. ENSURE "No information from the Requirements/ folder is used for implementation"
         OTHERWISE THROW "Design Violation: Implementation Leakage"
     3. ENSURE "Implementation compiles successfully"
         OTHERWISE THROW "Build Failed: Compilation Error"
+    4. ENSURE "All steps 1-3 are completed correctly, faithfully, and thoroughly"
+        OTHERWISE THROW "Implementation Quality Gate Failed: Incomplete or Unfaithful Execution"
 
 // ===================================================================
 // PHASE 5 — Full Quality Gate
@@ -107,9 +124,12 @@ FLOW phase5_full_quality_gate():
 
 FLOW phase6_final_packaging():
     1. ACHIEVE "Create build configuration with project metadata"
-    2. ACHIEVE "Prepare Build/Installation/ directory for distribution"
-    3. ACHIEVE "Assemble production artifacts into installation directory"
-    4. ENSURE "Installation into clean environment succeeds"
+    2. ACHIEVE "Perform top-to-bottom validation of all project artifacts (Requirements, Design, Validation, Implementation)"
+    3. ENSURE "All documents and information across all project folders are in sync"
+        OTHERWISE THROW "Packaging Failed: Synchronicity Error"
+    4. ACHIEVE "Prepare Build/Installation/ directory for distribution"
+    5. ACHIEVE "Assemble production artifacts into installation directory"
+    6. ENSURE "Installation into clean environment succeeds"
         OTHERWISE THROW "Packaging Failed: Installation Error"
-    5. ENSURE "Final distribution passes all basic functionality smoke tests"
+    7. ENSURE "Final distribution passes all basic functionality smoke tests"
         OTHERWISE THROW "Packaging Failed: Functionality Sanity Error"
