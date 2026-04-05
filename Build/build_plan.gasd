@@ -4,6 +4,7 @@
    Phases cover Design, Validation, Testing, Implementation, Quality, and Packaging.
 */
 
+VERSION 1.2
 NAMESPACE: "PROJECT-Template"
 
 CONTEXT: "Build Plan Template: GASD Project"
@@ -20,10 +21,13 @@ CONSTRAINT: "GASD agent MUST read and master 'GASD/GASD-1.1_Specification.md' to
 // ===================================================================
 
 FLOW phase1_generate_design():
-    1. ACHIEVE "Read Requirements/Ver-1.0/User_story.md"
+    1. ACHIEVE "Read Requirements/Ver-1.0/User_story.md":
+        POSTCONDITION: result != null
     2. ENSURE "All #US, #AC, #AT, #RT IDs are extracted"
         OTHERWISE THROW "Requirements Traceability Failed"
-    3. ACHIEVE "Generate Design/component_design.gasd" @trace #US-001
+    3. ACHIEVE "Generate Design/component_design.gasd":
+        POSTCONDITION: result != null
+        @trace #US-001
     4. ENSURE "All AC IDs are traced in design files"
         OTHERWISE THROW "Design Traceability Failed"
     5. ENSURE "All generated design gasd pass 'gasd-parser --ast-sem' with no errors"
@@ -37,13 +41,18 @@ FLOW phase1_generate_design():
 // ===================================================================
 
 FLOW phase2_generate_validations():
-    1. ACHIEVE "Read and master Requirements/ and Design/ folders to ensure expertise before generation"
+    1. ACHIEVE "Read and master Requirements/ and Design/ folders to ensure expertise before generation":
+        POSTCONDITION: result != null
     2. ENSURE "All validation gasd are generated ONLY from Requirements/ and Design/"
         OTHERWISE THROW "Validation Source Violation: Implementation Leakage"
-    3. ACHIEVE "Exhaustive validation of Design of all cases based on Design gasd; output to Validation/Design/"
-    4. ACHIEVE "Exhaustive validation of Acceptance Tests of all cases; output to Validation/Acceptance/"
-    5. ACHIEVE "Validation of Regression Tests of all cases; output to Validation/Regression/"
-    6. ACHIEVE "Exhaustive validation of Negative Tests of all cases; output to Validation/Negative/"
+    3. ACHIEVE "Exhaustive validation of Design of all cases based on Design gasd; output to Validation/Design/":
+        POSTCONDITION: result != null
+    4. ACHIEVE "Exhaustive validation of Acceptance Tests of all cases; output to Validation/Acceptance/":
+        POSTCONDITION: result != null
+    5. ACHIEVE "Validation of Regression Tests of all cases; output to Validation/Regression/":
+        POSTCONDITION: result != null
+    6. ACHIEVE "Exhaustive validation of Negative Tests of all cases; output to Validation/Negative/":
+        POSTCONDITION: result != null
     7. ENSURE "Each folder (Validation/Design, Validation/Acceptance, Validation/Regression, Validation/Negative) passes 'gasd-parser --ast-sem' with no errors"
         OTHERWISE THROW "Validation Syntax or Semantic Error Detected"
     8. ENSURE "All steps 1-7 are completed correctly, faithfully, and thoroughly"
@@ -57,7 +66,8 @@ FLOW phase2_generate_validations():
 FLOW phase3_generate_tests():
     /// Requirement: Consult ONLY Requirements/ and Design/ folders.
     /// Do NOT use Impl/ (implementation) as a reference during test generation.
-    1. ACHIEVE "Review Requirements/, Validation/ and Design/ for testing scope"
+    1. ACHIEVE "Review Requirements/, Validation/ and Design/ for testing scope":
+        POSTCONDITION: result != null
     2. ENSURE "No Impl/ (implementation) code is used as reference"
         OTHERWISE THROW "Design Violation: Implementation Leakage"
 
@@ -66,22 +76,28 @@ FLOW phase3_generate_tests():
         OTHERWISE THROW "Regression Detected: Existing Tests Failed"
 
     // --- Acceptance Tests ---
-    4. ACHIEVE "Generate most comprehensive Impl/tests/acceptance/test_component.py from Validation/Acceptance/ including all scenarios and cases" @trace #AT-001-01
+    4. ACHIEVE "Generate most comprehensive Impl/tests/acceptance/test_component.py from Validation/Acceptance/ including all scenarios and cases":
+        POSTCONDITION: result != null
+        @trace #AT-001-01
     5. ENSURE "All AC and AT from Validation/Acceptance/ are covered by acceptance tests"
         OTHERWISE THROW "Testing Coverage Gap Detected: Acceptance"
 
     // --- Regression Tests ---
-    6. ACHIEVE "Generate most comprehensive Impl/tests/regression/test_component.py from Validation/Regression/ including all scenarios and cases" @trace #RT-001-01
+    6. ACHIEVE "Generate most comprehensive Impl/tests/regression/test_component.py from Validation/Regression/ including all scenarios and cases":
+        POSTCONDITION: result != null
+        @trace #RT-001-01
     7. ENSURE "All RT from Validation/Regression/ are covered by regression tests"
         OTHERWISE THROW "Testing Coverage Gap Detected: Regression"
 
     // --- Negative Tests ---
-    8. ACHIEVE "Add most comprehensive negative testing suite from Validation/Negative/ covering all spec constraints, scenarios, and cases"
+    8. ACHIEVE "Add most comprehensive negative testing suite from Validation/Negative/ covering all spec constraints, scenarios, and cases":
+        POSTCONDITION: result != null
     9. ENSURE "Negative tests from Validation/Negative/ correctly trigger and validate expected failures"
         OTHERWISE THROW "Negative Testing Failure"
 
     // --- Design Validation Tests (from phase2_generate_validations) ---
-    10. ACHIEVE "Generate most comprehensive Impl/tests/design_validation/component_tests.py from Validation/Design/ including all scenarios and cases"
+    10. ACHIEVE "Generate most comprehensive Impl/tests/design_validation/component_tests.py from Validation/Design/ including all scenarios and cases":
+        POSTCONDITION: result != null
     11. ENSURE "Design validation tests match the specifications in Validation/Design/"
         OTHERWISE THROW "Design Validation Mismatch"
 
@@ -98,7 +114,9 @@ FLOW phase3_generate_tests():
 FLOW phase4_generate_implementation():
     /// Requirement: Consult ONLY the Design/ and Validation/ folders.
     /// Do NOT use the Requirements/ folder as a reference during implementation.
-    1. ACHIEVE "Implement Impl/component/ from Design/ and Validation/" @trace #US-001
+    1. ACHIEVE "Implement Impl/component/ from Design/ and Validation/":
+        POSTCONDITION: result != null
+        @trace #US-001
     2. ENSURE "No information from the Requirements/ folder is used for implementation"
         OTHERWISE THROW "Design Violation: Implementation Leakage"
     3. ENSURE "Implementation compiles successfully"
@@ -112,8 +130,10 @@ FLOW phase4_generate_implementation():
 // ===================================================================
 
 FLOW phase5_full_quality_gate():
-    1. ACHIEVE "Execute full test suite including acceptance, regression, negative, and design validation tests"
-    2. ACHIEVE "If any tests fail, iteratively fix the implementation based on Design/ and re-run all tests until 100% pass"
+    1. ACHIEVE "Execute full test suite including acceptance, regression, negative, and design validation tests":
+        POSTCONDITION: result != null
+    2. ACHIEVE "If any tests fail, iteratively fix the implementation based on Design/ and re-run all tests until 100% pass":
+        POSTCONDITION: result != null
     3. ENSURE "All categories of tests specified in Phase 3 pass with 100% success rate"
         OTHERWISE THROW "Build Failure: Quality Gate Failed"
 
@@ -123,12 +143,16 @@ FLOW phase5_full_quality_gate():
 // ===================================================================
 
 FLOW phase6_final_packaging():
-    1. ACHIEVE "Create build configuration with project metadata"
-    2. ACHIEVE "Perform top-to-bottom validation of all project artifacts (Requirements, Design, Validation, Implementation)"
+    1. ACHIEVE "Create build configuration with project metadata":
+        POSTCONDITION: result != null
+    2. ACHIEVE "Perform top-to-bottom validation of all project artifacts (Requirements, Design, Validation, Implementation)":
+        POSTCONDITION: result != null
     3. ENSURE "All documents and information across all project folders are in sync"
         OTHERWISE THROW "Packaging Failed: Synchronicity Error"
-    4. ACHIEVE "Prepare Build/Installation/ directory for distribution"
-    5. ACHIEVE "Assemble production artifacts into installation directory"
+    4. ACHIEVE "Prepare Build/Installation/ directory for distribution":
+        POSTCONDITION: result != null
+    5. ACHIEVE "Assemble production artifacts into installation directory":
+        POSTCONDITION: result != null
     6. ENSURE "Installation into clean environment succeeds"
         OTHERWISE THROW "Packaging Failed: Installation Error"
     7. ENSURE "Final distribution passes all basic functionality smoke tests"

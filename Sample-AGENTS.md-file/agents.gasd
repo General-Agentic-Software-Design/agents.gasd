@@ -1,9 +1,10 @@
 /* 
-   GASD 1.1.0 — Agent Workflows and Instructions
+   GASD 1.2 — Agent Workflows and Instructions
    ==============================================
    Converted from: Sample AGENTS.md file/agents.md
 */
 
+VERSION 1.2
 CONTEXT: "Agent workflows and instructions"
 TARGET: "AI Agent"
 NAMESPACE: "org.gasd.sample.agents"
@@ -24,10 +25,13 @@ CONSTRAINT: "Check the name field inside each package's package.json to confirm 
 /// Set up and navigate the development environment.
 FLOW dev_environment_setup(project_name: String):
     1. ACHIEVE "Jump to package directory":
+        POSTCONDITION: result.exit_code == 0
         command: "pnpm dlx turbo run where " + project_name
     2. ACHIEVE "Add package to workspace":
+        POSTCONDITION: result.exit_code == 0
         command: "pnpm install --filter " + project_name
     3. ACHIEVE "Spin up new React + Vite package":
+        POSTCONDITION: result.exit_code == 0
         command: "pnpm create vite@latest " + project_name + " -- --template react-ts"
     4. ENSURE "Vite, ESLint, and TypeScript can see the new package"
        OTHERWISE THROW "Environment Integration Failed"
@@ -35,24 +39,33 @@ FLOW dev_environment_setup(project_name: String):
 /// Execute the testing suite and ensure quality.
 FLOW testing_workflow(project_name: String):
     1. ACHIEVE "Identify CI plan":
+        POSTCONDITION: result != null
         location: ".github/workflows"
     2. ACHIEVE "Run package checks":
+        POSTCONDITION: result.exit_code == 0
         command: "pnpm turbo run test --filter " + project_name
     3. ACHIEVE "Run full suite from root":
+        POSTCONDITION: result.exit_code == 0
         command: "pnpm test"
     4. ACHIEVE "Focus on specific test":
+        POSTCONDITION: result.exit_code == 0
         command: "pnpm vitest run -t <test_name>"
     5. ACHIEVE "Fix all test or type errors":
+        POSTCONDITION: result.success == true
         objective: "Iterate until whole suite is green"
     6. ACHIEVE "Verify lint and TS rules":
+        POSTCONDITION: result.exit_code == 0
         command: "pnpm lint --filter " + project_name
-    7. ACHIEVE "Update or add tests for changed code"
+    7. ACHIEVE "Update or add tests for changed code":
+        POSTCONDITION: result.success == true
 
 /// Prepare a pull request according to standards.
 FLOW pull_request_preparation(project_name: String, title: String):
     1. ACHIEVE "Format PR Title":
+        POSTCONDITION: result != null
         formatted_title: "[" + project_name + "] " + title
     2. ACHIEVE "Pre-commit Validation":
+        POSTCONDITION: result.success == true
         lint_command: "pnpm lint"
         test_command: "pnpm test"
     3. ENSURE "All checks pass" 
