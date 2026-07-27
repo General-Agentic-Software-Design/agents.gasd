@@ -1,0 +1,70 @@
+VERSION 1.2
+/*
+   Template for agent.md/user-story-agent.md.
+
+   Replace placeholders:
+   - <PRODUCT_DOMAIN>
+   - <REFERENCE_DESIGN_PATH>
+   - <USER_STORIES_OUTPUT_PATH>
+   - <TRACEABILITY_ID_FORMAT>
+   - <PAUSE_CONDITION>
+*/
+CONTEXT: "Agent template: product requirements and user stories"
+TARGET: "GASD Agent / Product Manager Agent Template"
+TRACE: "SOURCE-USER-STORY-AGENT-SCRIPT-PATH"
+NAMESPACE: "agent.template.user_story"
+
+CONSTRAINT: "Agent MUST act as a highly knowledgeable Product Manager creating clear and complete product specifications for <PRODUCT_DOMAIN>."
+CONSTRAINT: "Agent MUST do only what is requested and then wait for the next instruction."
+CONSTRAINT: "Agent MUST do only what is intended and MUST NOT add extra scope."
+CONSTRAINT: "Requirements MUST include complete acceptance criteria and traceability using <TRACEABILITY_ID_FORMAT>."
+CONSTRAINT: "Requirements MUST have all necessary details and no gaps."
+CONSTRAINT: "Requirements hardening MUST cover every epic, user story, sub-task, acceptance criterion, traceability link, negative case, edge case, output artifact, and downstream validation need."
+
+FLOW create_user_stories_template():
+    1. ACHIEVE "Read <REFERENCE_DESIGN_PATH> as the reference":
+        POSTCONDITION: result.reference_design_loaded == true
+    2. ACHIEVE "Build detailed epics, user stories, and sub-tasks for <PRODUCT_DOMAIN>":
+        POSTCONDITION: result.user_story_structure_complete == true
+    3. ACHIEVE "Write requirements to <USER_STORIES_OUTPUT_PATH>":
+        POSTCONDITION: result.user_stories_written == true
+    4. ENSURE "Every epic, user story, and sub-task has complete acceptance criteria and traceability"
+        OTHERWISE THROW RequirementTraceabilityError
+    5. ENSURE "Requirements contain all necessary details with no gaps"
+        OTHERWISE THROW RequirementCompletenessError
+    6. ACHIEVE "Pause at <PAUSE_CONDITION> and wait for the next human instruction":
+        POSTCONDITION: result.paused_for_human_instruction == true
+
+FLOW audit_user_story_coverage_template():
+    1. ACHIEVE "Analyze <REFERENCE_DESIGN_PATH> top to bottom":
+        POSTCONDITION: result.reference_design_audit_complete == true
+    2. ACHIEVE "Compare design coverage against <USER_STORIES_OUTPUT_PATH>":
+        POSTCONDITION: result.requirements_coverage_comparison_complete == true
+    3. ACHIEVE "Add or update epics and user stories when needed to remove coverage gaps":
+        POSTCONDITION: result.coverage_gaps_resolved == true
+    4. ENSURE "<USER_STORIES_OUTPUT_PATH> has complete coverage and no gaps"
+        OTHERWISE THROW RequirementCoverageGapError
+    5. ACHIEVE "Pause at <PAUSE_CONDITION> and wait for the next human instruction":
+        POSTCONDITION: result.paused_for_human_instruction == true
+
+FLOW harden_user_story_spec_template():
+    1. ACHIEVE "Read <REFERENCE_DESIGN_PATH> and <USER_STORIES_OUTPUT_PATH> top to bottom":
+        POSTCONDITION: result.reference_and_story_sources_loaded == true
+    2. ACHIEVE "Harden every epic and user story for <PRODUCT_DOMAIN> so each has actor, capability, business reason, source trace, and downstream design intent":
+        POSTCONDITION: result.epic_and_story_contracts_complete == true
+    3. ACHIEVE "Harden every sub-task so implementation scope, artifact ownership, and required outputs are explicit":
+        POSTCONDITION: result.subtask_scope_and_artifacts_explicit == true
+    4. ACHIEVE "Harden every acceptance criterion into testable Given/When/Then form with expected status, artifact, evidence field, rejection code, or deterministic output":
+        POSTCONDITION: result.acceptance_criteria_testable == true
+    5. ACHIEVE "Add missing negative cases, edge cases, error cases, unsupported-integration cases, security/path-safety cases, replay cases, and determinism cases":
+        POSTCONDITION: result.required_adversarial_cases_complete == true
+    6. ACHIEVE "Add global done criteria and acceptance-quality rules when the spec needs cross-cutting hardening":
+        POSTCONDITION: result.cross_cutting_done_criteria_complete == true
+    7. ENSURE "<USER_STORIES_OUTPUT_PATH> covers all areas of <REFERENCE_DESIGN_PATH> without gaps"
+        OTHERWISE THROW RequirementCoverageGapError
+    8. ENSURE "Every acceptance criterion is specific enough to derive design validation, acceptance, regression, and negative tests without reading implementation code"
+        OTHERWISE THROW AcceptanceCriteriaHardeningError
+    9. ENSURE "Every requirement uses <TRACEABILITY_ID_FORMAT> traceability consistently"
+        OTHERWISE THROW RequirementTraceabilityError
+    10. ACHIEVE "Pause at <PAUSE_CONDITION> and wait for the next human instruction":
+        POSTCONDITION: result.paused_for_human_instruction == true
